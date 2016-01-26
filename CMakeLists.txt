@@ -428,11 +428,19 @@ add_executable(cen64
   ${VR4300_SOURCES}
 )
 
+add_executable(playback
+  ${PROJECT_SOURCE_DIR}/ai/playback.c
+)
+
 target_link_libraries(cen64
 	${EXTRA_OS_LIBS}
   ${OPENAL_LIBRARY}
   ${OPENGL_gl_LIBRARY}
   ${X11_X11_LIB}
   ${CMAKE_THREAD_LIBS_INIT}
+)
+
+target_link_libraries(playback
+  ${OPENAL_LIBRARY}
 )
 
