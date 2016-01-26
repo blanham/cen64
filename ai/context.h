@@ -23,6 +23,8 @@ struct cen64_ai_context {
 
   ALCdevice *dev;
   ALCcontext *ctx;
+
+  FILE *dump;
 };
 
 cen64_cold int ai_context_create(struct cen64_ai_context *context);

@@ -18,6 +18,11 @@ int ai_context_create(struct cen64_ai_context *context) {
   uint8_t buf[8];
   unsigned i;
 
+  if ((context->dump = fopen("dump.aud", "w")) == NULL) {
+    printf("Failed to open 'dump.aud' for writing.\n");
+    return 1;
+  }
+
   context->cur_frequency = 31985;
 
   if ((context->dev = alcOpenDevice(NULL)) == NULL) {
@@ -103,6 +108,7 @@ void ai_context_destroy(struct cen64_ai_context *context) {
   alcMakeContextCurrent(NULL);
   alcDestroyContext(context->ctx);
   alcCloseDevice(context->dev);
+  fclose(context->dump);
 }
 
 // Generate buffers for some given frequency.

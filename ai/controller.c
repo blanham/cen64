@@ -104,6 +104,7 @@ void ai_dma(struct ai_controller *ai) {
         word = byteswap_32(word);
         word = (word >> 16) | (word << 16);
         memcpy(buf + sizeof(word) * i, &word, sizeof(word));
+        fwrite(&word, sizeof(word), 1, ai->ctx.dump);
       }
 
       if (ai->ctx.unqueued_buffers > 0) {
