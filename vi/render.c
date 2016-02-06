@@ -16,15 +16,16 @@
 void gl_window_init(struct vi_controller *vi) {
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_LIGHTING);
-  glDisable(GL_BLEND);
+//  glDisable(GL_BLEND);
   glDisable(GL_DITHER);
   glEnable(GL_TEXTURE_2D);
+//  glEnable(GL_SCISSOR_TEST);
 
   // Initialize the texture that we'll use for drawing the screen.
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
   // Initialize vertex arrays for drawing.
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -47,20 +48,20 @@ void gl_window_init(struct vi_controller *vi) {
 void gl_window_render_frame(struct vi_controller *vi, const uint8_t *buffer,
   unsigned hres, unsigned vres, unsigned hskip, unsigned type) {
 
-  switch(type) {
-    case 0:
-      return;
+//  switch(type) {
+//    case 0:
+//      return;
 
-    case 1:
-      assert(0 && "Attempted to use reserved frame type.");
-      return;
+//    case 1:
+//      assert(0 && "Attempted to use reserved frame type.");
+//      return;
 
-    case 2:
-      break;
+//    case 2:
+//      break;
 
-    case 3:
-      break;
-  }
+//    case 3:
+//      break;
+//  }
 
   cen64_gl_window_swap_buffers(vi->window);
 }
@@ -89,4 +90,3 @@ void gl_window_resize_cb(int width, int height) {
 
   glClear(GL_COLOR_BUFFER_BIT);
 }
-
