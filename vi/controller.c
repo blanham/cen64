@@ -104,9 +104,6 @@ void vi_cycle(struct vi_controller *vi) {
       copy_size = sizeof(vi->window->frame_buffer);
 
     memcpy(&bus, vi, sizeof(bus));
-    memcpy(vi->window->frame_buffer,
-      bus->ri->ram + (vi->regs[VI_ORIGIN_REG] & 0xFFFFFF),
-      copy_size);
 
     if (likely(bus->vi->window))
       cen64_gl_window_pump_events(bus);
