@@ -72,13 +72,9 @@ bool cen64_gl_window_pump_winapi_events(struct vi_controller *vi,
     else if (msg.message == WM_USER) {
       cen64_gl_window window = vi->window;
 
-      cen64_mutex_lock(&window->render_mutex);
-
       gl_window_render_frame(vi, window->frame_buffer,
         window->frame_hres, window->frame_vres,
         window->frame_hskip, window->frame_type);
-
-      cen64_mutex_unlock(&window->render_mutex);
 
       // Update the window title every 60 VIs
       // to display the current VI/s rate.
@@ -187,6 +183,8 @@ cen64_gl_window cen64_gl_window_create(
 
 // For pumping UI events from the RCP thread.
 int cen64_gl_window_pump_events(struct bus_controller *bus) {
+  PostThreadMessage(bus->vi->window->thread_id, WM_USER, 0, 0);
+
   return cen64_gl_window_pump_winapi_events(bus->vi,
     &bus->vi->last_update_time, &bus->vi->frame_count);
 }
