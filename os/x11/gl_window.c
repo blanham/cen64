@@ -23,7 +23,7 @@
 #include <X11/Xlib.h>
 
 static int cen64_gl_window_create_objects(cen64_gl_window window);
-static bool cen64_gl_window_pump_events(struct vi_controller *vi);
+static bool cen64_gl_window_pump_x11_events(struct vi_controller *vi);
 
 // Creates an (initially hidden) cen64_gl_window.
 cen64_gl_window cen64_gl_window_create(
@@ -77,7 +77,7 @@ cen64_gl_window cen64_gl_window_create(
 }
 
 // Handles events that come from X11.
-bool cen64_gl_window_pump_events(struct vi_controller *vi) {
+bool cen64_gl_window_pump_x11_events(struct vi_controller *vi) {
   bool released, exit_requested = false;
   XEvent event;
 
@@ -150,6 +150,39 @@ int cen64_gl_window_create_objects(cen64_gl_window window) {
   return 0;
 }
 
+// For pumping UI events from the RCP thread.
+int cen64_gl_window_pump_events(struct bus_controller *bus) {
+  struct vi_controller *vi = bus->vi;
+  cen64_gl_window window = vi->window;
+
+  if (unlikely(cen64_gl_window_pump_x11_events(vi)))
+    return 1;
+
+  gl_window_render_frame(vi, window->frame_buffer,
+    window->frame_hres, window->frame_vres,
+    window->frame_hskip, window->frame_type);
+
+  if (++(vi->frame_count) == 60) {
+    char title[128];
+    cen64_time current_time;
+    float ns;
+
+    // Compute time spent rendering last 60 frames, reset timer/counter.
+    get_time(&current_time);
+    ns = compute_time_difference(&current_time, &vi->last_update_time);
+    vi->last_update_time = current_time;
+    vi->frame_count = 0;
+
+    sprintf(title,
+      "krom64 ["CEN64_COMPILER" - "CEN64_ARCH_DIR"/"CEN64_ARCH_SUPPORT"]"
+      " - %.1f VI/s", (60 / (ns / NS_PER_SEC)));
+
+    cen64_gl_window_set_title(window, title);
+  }
+
+  return 0;
+}
+
 // Thread that controls the user interface, etc.
 int cen64_gl_window_thread(struct cen64_device *device) {
   struct vi_controller *vi = &device->vi;
@@ -182,7 +215,7 @@ int cen64_gl_window_thread(struct cen64_device *device) {
 
       // Did we get a X11 event?
       //if (FD_ISSET(x11_fd, &ready_to_read)) {
-        if (unlikely(cen64_gl_window_pump_events(vi)))
+        if (unlikely(cen64_gl_window_pump_x11_events(vi)))
           break;
       //}
 

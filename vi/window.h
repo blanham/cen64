@@ -17,5 +17,7 @@
 cen64_cold int vi_create_window(struct vi_controller *vi);
 cen64_cold void vi_destroy_window(struct vi_controller *vi);
 
+int cen64_gl_window_pump_events(struct bus_controller *bus);
+
 #endif
 

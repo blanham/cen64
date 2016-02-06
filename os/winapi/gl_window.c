@@ -18,7 +18,7 @@
 #include "vi/render.h"
 #include <windows.h>
 
-static bool cen64_gl_window_pump_events(struct vi_controller *vi,
+static bool cen64_gl_window_pump_winapi_events(struct vi_controller *vi,
   cen64_time *time, unsigned *frame_count);
 
 static LRESULT CALLBACK WndProc(HWND hwnd,
@@ -41,7 +41,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd,
 }
 
 // Handles events that come from Windows.
-bool cen64_gl_window_pump_events(struct vi_controller *vi,
+bool cen64_gl_window_pump_winapi_events(struct vi_controller *vi,
   cen64_time *last_update_time, unsigned *frame_count) {
   struct bus_controller *bus;
   bool exit_requested = false;
@@ -49,9 +49,7 @@ bool cen64_gl_window_pump_events(struct vi_controller *vi,
 
   memcpy(&bus, vi, sizeof(bus));
 
-  while (1) {
-    GetMessage(&msg, NULL, 0, 0);
-
+  while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
     if (msg.message == WM_QUIT) {
       cen64_mutex_lock(&vi->window->event_mutex);
       vi->window->exit_requested = exit_requested = true;
@@ -96,7 +94,7 @@ bool cen64_gl_window_pump_events(struct vi_controller *vi,
         *frame_count = 0;
 
         sprintf(title,
-          "CEN64 ["CEN64_COMPILER" - "CEN64_ARCH_DIR"/"CEN64_ARCH_SUPPORT"]"
+          "krom64 ["CEN64_COMPILER" - "CEN64_ARCH_DIR"/"CEN64_ARCH_SUPPORT"]"
           " - %.1f VI/s", (60 / (ns / NS_PER_SEC)));
 
         cen64_gl_window_set_title(window, title);
@@ -187,6 +185,12 @@ cen64_gl_window cen64_gl_window_create(
   return window;
 }
 
+// For pumping UI events from the RCP thread.
+int cen64_gl_window_pump_events(struct bus_controller *bus) {
+  return cen64_gl_window_pump_winapi_events(bus->vi,
+    &bus->vi->last_update_time, &bus->vi->frame_count);
+}
+
 // Thread that controls the user interface, etc.
 int cen64_gl_window_thread(struct cen64_device *device) {
   cen64_time last_update_time;
@@ -195,7 +199,7 @@ int cen64_gl_window_thread(struct cen64_device *device) {
   get_time(&last_update_time);
   frame_count = 0;
 
-  while (!cen64_gl_window_pump_events(&device->vi,
+  while (!cen64_gl_window_pump_winapi_events(&device->vi,
     &last_update_time, &frame_count));
 
   return 0;

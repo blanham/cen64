@@ -279,19 +279,7 @@ int validate_sha(struct rom_file *rom, const uint8_t *good_sum) {
 
 // Spins the device until an exit request is received.
 int run_device(struct cen64_device *device, bool no_video) {
-  cen64_thread thread;
-
-  if (cen64_thread_create(&thread, run_device_thread, device)) {
-    printf("Failed to create the main emulation thread.\n");
-    device_destroy(device);
-    return 1;
-  }
-
-  if (!no_video)
-    cen64_gl_window_thread(device);
-
-  cen64_thread_join(&thread);
-  return 0;
+  return run_device_thread(device);
 }
 
 CEN64_THREAD_RETURN_TYPE run_device_thread(void *opaque) {

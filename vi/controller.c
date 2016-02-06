@@ -85,15 +85,8 @@ void vi_cycle(struct vi_controller *vi) {
 
   // Interact with the user interface?
   if (likely(window)) {
-    cen64_mutex_lock(&window->event_mutex);
-
-    if (unlikely(window->exit_requested)) {
-      cen64_mutex_unlock(&window->event_mutex);
+    if (unlikely(window->exit_requested))
       device_exit(vi->bus);
-    }
-
-    cen64_mutex_unlock(&window->event_mutex);
-    cen64_mutex_lock(&window->render_mutex);
 
     // Calculate the height and width of the frame.
     window->frame_vres = ra->height =((ra->y.end - ra->y.start) >> 1) * vcoeff;
@@ -115,8 +108,8 @@ void vi_cycle(struct vi_controller *vi) {
       bus->ri->ram + (vi->regs[VI_ORIGIN_REG] & 0xFFFFFF),
       copy_size);
 
-    cen64_mutex_unlock(&vi->window->render_mutex);
-    cen64_gl_window_push_frame(window);
+    if (likely(bus->vi->window))
+      cen64_gl_window_pump_events(bus);
   }
 
   else if (++(vi->frame_count) == 60) {
