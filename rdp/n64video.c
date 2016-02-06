@@ -1073,6 +1073,7 @@ static inline void tcclamp_cycle_light(int32_t* S, int32_t* T, int32_t maxs, int
 
 cen64_cold int angrylion_rdp_init(struct cen64_device *device)
 {
+  pthread_mutex_lock(&device->rdp.sync_mutex);
   cen64 = device;
 
 	if (LOG_RDP_EXECUTION)
@@ -1131,6 +1132,7 @@ cen64_cold int angrylion_rdp_init(struct cen64_device *device)
 	
 	rdram_8 = (uint8_t*)rdram;
 	rdram_16 = (uint16_t*)rdram;
+  pthread_mutex_unlock(&device->rdp.sync_mutex);
 	return 0;
 }
 
@@ -7458,12 +7460,15 @@ static void (*const rdp_command_table[64])(uint32_t w1, uint32_t w2) =
 
 void rdp_process_list(void)
 {
+	//fprintf(stderr, "rdp dma: start=0x%.8X, cur=0x%.8X, end=0x%.8X\n", dp_start, dp_current, dp_end);
 	int i, length;
 	uint32_t cmd, cmd_length;
 	uint32_t dp_current_al = dp_current & ~7, dp_end_al = dp_end & ~7; 
 
 	dp_status &= ~DP_STATUS_FREEZE;
-	
+
+  // Denote that the RDP latched in the start and end registers.
+  cen64->rdp.regs[DPC_STATUS_REG] &= ~(DP_STATUS_START_VALID | DP_STATUS_END_VALID);
 	
 	
 	
@@ -7472,8 +7477,8 @@ void rdp_process_list(void)
 
 	if (dp_end_al <= dp_current_al)
 	{
-		
-		
+    cen64->rdp.regs[DPC_STATUS_REG] &= ~(DP_STATUS_CMD_BUSY | DP_STATUS_DMA_BUSY);
+    cen64->rdp.regs[DPC_STATUS_REG] |= DP_STATUS_CBUF_READY;
 		
 		
 		
@@ -7518,7 +7523,13 @@ void rdp_process_list(void)
 			dp_current_al++;
 		}
 	}
-	
+
+  cen64->rdp.regs[DPC_STATUS_REG] &= ~(DP_STATUS_CMD_BUSY | DP_STATUS_DMA_BUSY);
+  cen64->rdp.regs[DPC_STATUS_REG] |= DP_STATUS_CBUF_READY | DP_STATUS_PIPE_BUSY;
+  cen64->rdp.regs[DPC_START_REG] = cen64->rdp.regs[DPC_CURRENT_REG] =
+    cen64->rdp.regs[DPC_END_REG];
+
+  cen64_mutex_unlock(&cen64->rdp.sync_mutex);
 
 	while (rdp_cmd_cur < rdp_cmd_ptr && !rdp_pipeline_crashed)
 	{
@@ -7529,9 +7540,7 @@ void rdp_process_list(void)
 		
 		if ((rdp_cmd_ptr - rdp_cmd_cur) < cmd_length)
 		{
-			
-			dp_start = dp_current = dp_end;
-			return;
+			goto out;
 		}
 		
 		if (LOG_RDP_EXECUTION)
@@ -7559,10 +7568,12 @@ void rdp_process_list(void)
 	};
 	rdp_cmd_ptr = 0;
 	rdp_cmd_cur = 0;
-	dp_start = dp_current = dp_end;
 	
-	
-	
+
+out:
+  cen64_mutex_lock(&cen64->rdp.sync_mutex);
+  cen64->rdp.regs[DPC_STATUS_REG] &= ~DP_STATUS_PIPE_BUSY;
+  ;
 }
 
 static inline int alpha_compare(int32_t comb_alpha)

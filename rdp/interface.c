@@ -24,7 +24,11 @@
 #define DP_CLEAR_FLUSH            0x00000010
 #define DP_SET_FLUSH              0x00000020
 
-void rdp_process_list(void);
+#define DP_STATUS_CMD_BUSY			  0x00000040
+#define DP_STATUS_CBUF_READY		  0x00000080
+#define DP_STATUS_DMA_BUSY			  0x00000100
+#define DP_STATUS_END_VALID		    0x00000200
+#define DP_STATUS_START_VALID		  0x00000400
 
 // Reads a word from the DP MMIO register space.
 int read_dp_regs(void *opaque, uint32_t address, uint32_t *word) {
@@ -32,7 +36,10 @@ int read_dp_regs(void *opaque, uint32_t address, uint32_t *word) {
   uint32_t offset = address - DP_REGS_BASE_ADDRESS;
   enum dp_register reg = (offset >> 2);
 
+  pthread_mutex_lock(&rdp->sync_mutex);
   *word = rdp->regs[reg];
+  pthread_mutex_unlock(&rdp->sync_mutex);
+
   debug_mmio_read(dp, dp_register_mnemonics[reg], *word);
   return 0;
 }
@@ -45,16 +52,23 @@ int write_dp_regs(void *opaque, uint32_t address, uint32_t word, uint32_t dqm) {
 
   debug_mmio_write(dp, dp_register_mnemonics[reg], word, dqm);
 
+  cen64_mutex_lock(&rdp->sync_mutex);
+
   switch (reg) {
     case DPC_START_REG:
       rdp->regs[DPC_CURRENT_REG] = word;
       rdp->regs[DPC_START_REG] = word;
+      rdp->regs[DPC_STATUS_REG] |= DP_STATUS_START_VALID;
       break;
 
     case DPC_END_REG:
       rdp->regs[DPC_END_REG] = word;
-      rdp_process_list();
-      break;
+      rdp->regs[DPC_STATUS_REG] &= ~DP_STATUS_CBUF_READY;
+      rdp->regs[DPC_STATUS_REG] |= DP_STATUS_END_VALID |
+        DP_STATUS_CMD_BUSY | DP_STATUS_DMA_BUSY;
+      cen64_mutex_unlock(&rdp->sync_mutex);
+      pthread_cond_signal(&rdp->sync_cv);
+      return 0;
 
     case DPC_STATUS_REG:
       if (word & DP_CLEAR_XBUS_DMEM_DMA)
@@ -79,6 +93,7 @@ int write_dp_regs(void *opaque, uint32_t address, uint32_t word, uint32_t dqm) {
       break;
   }
 
+  cen64_mutex_unlock(&rdp->sync_mutex);
   return 0;
 }
 
