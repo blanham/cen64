@@ -46,7 +46,6 @@ void gl_window_init(struct vi_controller *vi) {
 // Renders a frame.
 void gl_window_render_frame(struct vi_controller *vi, const uint8_t *buffer,
   unsigned hres, unsigned vres, unsigned hskip, unsigned type) {
-  float aspect;
 
   switch(type) {
     case 0:
@@ -57,20 +56,12 @@ void gl_window_render_frame(struct vi_controller *vi, const uint8_t *buffer,
       return;
 
     case 2:
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, hres + hskip, vres,
-        0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, buffer);
       break;
 
     case 3:
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, hres + hskip, vres,
-        0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
       break;
   }
 
-  aspect = (float) hres / (hres + hskip);
-  vi->viuv[2] = vi->viuv[4] = aspect;
-
-  glDrawArrays(GL_QUADS, 0, 4);
   cen64_gl_window_swap_buffers(vi->window);
 }
 
