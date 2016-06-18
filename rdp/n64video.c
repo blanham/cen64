@@ -81,6 +81,12 @@ MarathonMan
 #include <stdint.h>
 #include <string.h>
 
+#ifdef __GNUC__
+#define rdp_inline __attribute__((always_inline))
+#else
+#define rdp_inline
+#endif
+
 #define byteswap_16(x) ((uint16_t) (((uint8_t) (x >> 8)) | ((uint16_t) (x << 8))))
 
 #define SP_INTERRUPT	0x1
@@ -520,29 +526,29 @@ static void render_spans_2cycle_notexel1(int start, int end, int tilenum, int fl
 static void render_spans_2cycle_notex(int start, int end, int tilenum, int flip, __m128i spans_drgba_v, __m128i spans_dstwz_v, __m128i spans_dstwzdy_v, __m128i spans_cdrgba_drgbady_v);
 static void render_spans_fill(int start, int end, int flip);
 static void render_spans_copy(int start, int end, int tilenum, int flip, __m128i spans_dstwz_v);
-static inline void combiner_1cycle(int adseed, uint32_t* curpixel_cvg);
-static inline void combiner_2cycle(int adseed, uint32_t* curpixel_cvg, int32_t* acalpha);
-static inline int blender_1cycle(uint32_t* fr, uint32_t* fg, uint32_t* fb, int dith, uint32_t blend_en, uint32_t prewrap, uint32_t curpixel_cvg, uint32_t curpixel_cvbit);
-static inline int blender_2cycle(uint32_t* fr, uint32_t* fg, uint32_t* fb, int dith, uint32_t blend_en, uint32_t prewrap, uint32_t curpixel_cvg, uint32_t curpixel_cvbit, int32_t acalpha);
-static inline void texture_pipeline_cycle(COLOR TEX, COLOR prev, int32_t SSS, int32_t SST, uint32_t tilenum, uint32_t cycle);
-static inline void tc_pipeline_copy(int32_t* sss0, int32_t* sss1, int32_t* sss2, int32_t* sss3, int32_t* sst, int tilenum);
-static inline void tc_pipeline_load(int32_t* sss, int32_t* sst, int tilenum, int coord_quad);
-static inline void tcclamp_generic(int32_t* S, int32_t* T, int32_t* SFRAC, int32_t* TFRAC, int32_t maxs, int32_t maxt, int32_t num);
-static inline void tcclamp_cycle(int32_t* S, int32_t* T, int32_t* SFRAC, int32_t* TFRAC, int32_t maxs, int32_t maxt, int32_t num);
-static inline void tcclamp_cycle_light(int32_t* S, int32_t* T, int32_t maxs, int32_t maxt, int32_t num);
-static inline void tcshift_cycle(int32_t* S, int32_t* T, int32_t* maxs, int32_t* maxt, uint32_t num);
-static inline void tcshift_copy(int32_t* S, int32_t* T, uint32_t num);
+static rdp_inline void combiner_1cycle(int adseed, uint32_t* curpixel_cvg);
+static rdp_inline void combiner_2cycle(int adseed, uint32_t* curpixel_cvg, int32_t* acalpha);
+static rdp_inline int blender_1cycle(uint32_t* fr, uint32_t* fg, uint32_t* fb, int dith, uint32_t blend_en, uint32_t prewrap, uint32_t curpixel_cvg, uint32_t curpixel_cvbit);
+static rdp_inline int blender_2cycle(uint32_t* fr, uint32_t* fg, uint32_t* fb, int dith, uint32_t blend_en, uint32_t prewrap, uint32_t curpixel_cvg, uint32_t curpixel_cvbit, int32_t acalpha);
+static rdp_inline void texture_pipeline_cycle(COLOR TEX, COLOR prev, int32_t SSS, int32_t SST, uint32_t tilenum, uint32_t cycle);
+static rdp_inline void tc_pipeline_copy(int32_t* sss0, int32_t* sss1, int32_t* sss2, int32_t* sss3, int32_t* sst, int tilenum);
+static rdp_inline void tc_pipeline_load(int32_t* sss, int32_t* sst, int tilenum, int coord_quad);
+static rdp_inline void tcclamp_generic(int32_t* S, int32_t* T, int32_t* SFRAC, int32_t* TFRAC, int32_t maxs, int32_t maxt, int32_t num);
+static rdp_inline void tcclamp_cycle(int32_t* S, int32_t* T, int32_t* SFRAC, int32_t* TFRAC, int32_t maxs, int32_t maxt, int32_t num);
+static rdp_inline void tcclamp_cycle_light(int32_t* S, int32_t* T, int32_t maxs, int32_t maxt, int32_t num);
+static rdp_inline void tcshift_cycle(int32_t* S, int32_t* T, int32_t* maxs, int32_t* maxt, uint32_t num);
+static rdp_inline void tcshift_copy(int32_t* S, int32_t* T, uint32_t num);
 cen64_cold static void precalculate_everything(void);
-static inline int alpha_compare(int32_t comb_alpha);
-static inline int32_t color_combiner_equation(int32_t a, int32_t b, int32_t c, int32_t d);
-static inline int32_t alpha_combiner_equation(int32_t a, int32_t b, int32_t c, int32_t d);
-static inline void blender_equation_cycle0(int* r, int* g, int* b);
-static inline void blender_equation_cycle0_2(int* r, int* g, int* b);
-static inline void blender_equation_cycle1(int* r, int* g, int* b);
-static inline uint32_t rightcvghex(uint32_t x, uint32_t fmask); 
-static inline uint32_t leftcvghex(uint32_t x, uint32_t fmask);
-static inline void compute_cvg_noflip(int32_t scanline);
-static inline void compute_cvg_flip(int32_t scanline);
+static rdp_inline int alpha_compare(int32_t comb_alpha);
+static rdp_inline int32_t color_combiner_equation(int32_t a, int32_t b, int32_t c, int32_t d);
+static rdp_inline int32_t alpha_combiner_equation(int32_t a, int32_t b, int32_t c, int32_t d);
+static rdp_inline void blender_equation_cycle0(int* r, int* g, int* b);
+static rdp_inline void blender_equation_cycle0_2(int* r, int* g, int* b);
+static rdp_inline void blender_equation_cycle1(int* r, int* g, int* b);
+static rdp_inline uint32_t rightcvghex(uint32_t x, uint32_t fmask); 
+static rdp_inline uint32_t leftcvghex(uint32_t x, uint32_t fmask);
+static rdp_inline void compute_cvg_noflip(int32_t scanline);
+static rdp_inline void compute_cvg_flip(int32_t scanline);
 static void fbwrite_4(uint32_t curpixel, uint32_t r, uint32_t g, uint32_t b, uint32_t blend_en, uint32_t curpixel_cvg, uint32_t curpixel_memcvg);
 static void fbwrite_8(uint32_t curpixel, uint32_t r, uint32_t g, uint32_t b, uint32_t blend_en, uint32_t curpixel_cvg, uint32_t curpixel_memcvg);
 static void fbwrite_16(uint32_t curpixel, uint32_t r, uint32_t g, uint32_t b, uint32_t blend_en, uint32_t curpixel_cvg, uint32_t curpixel_memcvg);
@@ -559,42 +565,42 @@ static void fbread2_4(uint32_t num, uint32_t* curpixel_memcvg);
 static void fbread2_8(uint32_t num, uint32_t* curpixel_memcvg);
 static void fbread2_16(uint32_t num, uint32_t* curpixel_memcvg);
 static void fbread2_32(uint32_t num, uint32_t* curpixel_memcvg);
-static inline uint32_t z_decompress(uint32_t rawz);
-static inline uint32_t dz_decompress(uint32_t compresseddz);
-static inline uint32_t dz_compress(uint32_t value);
+static rdp_inline uint32_t z_decompress(uint32_t rawz);
+static rdp_inline uint32_t dz_decompress(uint32_t compresseddz);
+static rdp_inline uint32_t dz_compress(uint32_t value);
 cen64_cold static void z_build_com_table(void);
 cen64_cold static void precalc_cvmask_derivatives(void);
-static inline uint16_t decompress_cvmask_frombyte(uint8_t byte);
-static inline void lookup_cvmask_derivatives(uint32_t mask, uint8_t* offx, uint8_t* offy, uint32_t* curpixel_cvg, uint32_t* curpixel_cvbit);
-static inline void z_store(uint32_t zcurpixel, uint32_t z, int dzpixenc);
-static inline uint32_t z_compare(uint32_t zcurpixel, uint32_t sz, uint16_t dzpix, int dzpixenc, uint32_t* blend_en, uint32_t* prewrap, uint32_t* curpixel_cvg, uint32_t curpixel_memcvg);
-static inline int finalize_spanalpha(uint32_t blend_en, uint32_t curpixel_cvg, uint32_t curpixel_memcvg);
-static inline int32_t normalize_dzpix(int32_t sum);
-static inline int32_t CLIP(int32_t value,int32_t min,int32_t max);
-static inline void video_filter16(int* r, int* g, int* b, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t centercvg, uint32_t fetchstate);
-static inline void video_filter32(int* endr, int* endg, int* endb, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t centercvg, uint32_t fetchstate);
-static inline void divot_filter(CCVG final, CCVG centercolor, CCVG leftcolor, CCVG rightcolor);
-static inline void restore_filter16(int* r, int* g, int* b, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t fetchstate);
-static inline void restore_filter32(int* r, int* g, int* b, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t fetchstate);
-static inline void gamma_filters(int* r, int* g, int* b, int gamma_and_dither);
-static inline void adjust_brightness(int* r, int* g, int* b, int brightcoeff);
+static rdp_inline uint16_t decompress_cvmask_frombyte(uint8_t byte);
+static rdp_inline void lookup_cvmask_derivatives(uint32_t mask, uint8_t* offx, uint8_t* offy, uint32_t* curpixel_cvg, uint32_t* curpixel_cvbit);
+static rdp_inline void z_store(uint32_t zcurpixel, uint32_t z, int dzpixenc);
+static rdp_inline uint32_t z_compare(uint32_t zcurpixel, uint32_t sz, uint16_t dzpix, int dzpixenc, uint32_t* blend_en, uint32_t* prewrap, uint32_t* curpixel_cvg, uint32_t curpixel_memcvg);
+static rdp_inline int finalize_spanalpha(uint32_t blend_en, uint32_t curpixel_cvg, uint32_t curpixel_memcvg);
+static rdp_inline int32_t normalize_dzpix(int32_t sum);
+static rdp_inline int32_t CLIP(int32_t value,int32_t min,int32_t max);
+static rdp_inline void video_filter16(int* r, int* g, int* b, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t centercvg, uint32_t fetchstate);
+static rdp_inline void video_filter32(int* endr, int* endg, int* endb, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t centercvg, uint32_t fetchstate);
+static rdp_inline void divot_filter(CCVG final, CCVG centercolor, CCVG leftcolor, CCVG rightcolor);
+static rdp_inline void restore_filter16(int* r, int* g, int* b, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t fetchstate);
+static rdp_inline void restore_filter32(int* r, int* g, int* b, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t fetchstate);
+static rdp_inline void gamma_filters(int* r, int* g, int* b, int gamma_and_dither);
+static rdp_inline void adjust_brightness(int* r, int* g, int* b, int brightcoeff);
 static void clearfb16(uint16_t* fb, uint32_t width,uint32_t height);
 static void tcdiv_persp(__m128i stwz, int32_t ssst[2]);
 static void tcdiv_nopersp(__m128i stwz, int32_t ssst[2]);
-static inline void tclod_4x17_to_15(int32_t scurr, int32_t snext, int32_t tcurr, int32_t tnext, int32_t previous, int32_t* lod);
-static inline void tclod_tcclamp(int32_t* sss, int32_t* sst);
-static inline void lodfrac_lodtile_signals(int lodclamp, int32_t lod, uint32_t* l_tile, uint32_t* magnify, uint32_t* distant);
-static inline void tclod_1cycle_current(int32_t ssst[2], int32_t nexts, int32_t nextt, __m128i stwz, __m128i dstwzinc, int32_t scanline, int32_t prim_tile, int32_t* t1, SPANSIGS* sigs);
-static inline void tclod_1cycle_current_simple(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t scanline, int32_t prim_tile, int32_t* t1, SPANSIGS* sigs);
-static inline void tclod_1cycle_next(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t scanline, int32_t prim_tile, int32_t* t1, SPANSIGS* sigs, int32_t* prelodfrac);
-static inline void tclod_2cycle_current(int32_t ssst[2], int32_t nexts, int32_t nextt, __m128i stwz, int32_t prim_tile, int32_t* t1, int32_t* t2, __m128i spans_dstwzdy_v);
-static inline void tclod_2cycle_current_simple(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1, int32_t* t2, __m128i spans_dstwzdy_v);
-static inline void tclod_2cycle_current_notexel1(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1, __m128i spans_dstwzdy_v);
-static inline void tclod_2cycle_next(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1, int32_t* t2, int32_t* prelodfrac, __m128i spans_dstwzdy_v);
-static inline void tclod_copy(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1);
-static inline void get_texel1_1cycle(int32_t st[2], __m128i stwz, __m128i dstwzinc, int32_t scanline, SPANSIGS* sigs);
-static inline void get_nexttexel0_2cycle(int32_t st[2], __m128i stwz, __m128i dstwzinc);
-static inline void video_max_optimized(uint32_t* Pixels, uint32_t* penumin, uint32_t* penumax, int numofels);
+static rdp_inline void tclod_4x17_to_15(int32_t scurr, int32_t snext, int32_t tcurr, int32_t tnext, int32_t previous, int32_t* lod);
+static rdp_inline void tclod_tcclamp(int32_t* sss, int32_t* sst);
+static rdp_inline void lodfrac_lodtile_signals(int lodclamp, int32_t lod, uint32_t* l_tile, uint32_t* magnify, uint32_t* distant);
+static rdp_inline void tclod_1cycle_current(int32_t ssst[2], int32_t nexts, int32_t nextt, __m128i stwz, __m128i dstwzinc, int32_t scanline, int32_t prim_tile, int32_t* t1, SPANSIGS* sigs);
+static rdp_inline void tclod_1cycle_current_simple(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t scanline, int32_t prim_tile, int32_t* t1, SPANSIGS* sigs);
+static rdp_inline void tclod_1cycle_next(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t scanline, int32_t prim_tile, int32_t* t1, SPANSIGS* sigs, int32_t* prelodfrac);
+static rdp_inline void tclod_2cycle_current(int32_t ssst[2], int32_t nexts, int32_t nextt, __m128i stwz, int32_t prim_tile, int32_t* t1, int32_t* t2, __m128i spans_dstwzdy_v);
+static rdp_inline void tclod_2cycle_current_simple(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1, int32_t* t2, __m128i spans_dstwzdy_v);
+static rdp_inline void tclod_2cycle_current_notexel1(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1, __m128i spans_dstwzdy_v);
+static rdp_inline void tclod_2cycle_next(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1, int32_t* t2, int32_t* prelodfrac, __m128i spans_dstwzdy_v);
+static rdp_inline void tclod_copy(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1);
+static rdp_inline void get_texel1_1cycle(int32_t st[2], __m128i stwz, __m128i dstwzinc, int32_t scanline, SPANSIGS* sigs);
+static rdp_inline void get_nexttexel0_2cycle(int32_t st[2], __m128i stwz, __m128i dstwzinc);
+static rdp_inline void video_max_optimized(uint32_t* Pixels, uint32_t* penumin, uint32_t* penumax, int numofels);
 static void calculate_clamp_diffs(uint32_t tile);
 static void calculate_tile_derivs(uint32_t tile);
 static void rgb_dither_complete(int* r, int* g, int* b, int dith);
@@ -602,13 +608,13 @@ static void rgb_dither_nothing(int* r, int* g, int* b, int dith);
 static void get_dither_noise_complete(int x, int y, int* cdith, int* adith);
 static void get_dither_only(int x, int y, int* cdith, int* adith);
 static void get_dither_nothing(int x, int y, int* cdith, int* adith);
-static inline void vi_vl_lerp(CCVG up, CCVG down, uint32_t frac);
-static inline void rgbaz_correct_clip(int offx, int offy, __m128i rgba, int *z, uint32_t curpixel_cvg, __m128i spans_dstwzdy_v, __m128i spans_cdrgba_drgbady_v);
-static inline void vi_fetch_filter16(CCVG res, uint32_t fboffset, uint32_t cur_x, uint32_t fsaa, uint32_t dither_filter, uint32_t vres, uint32_t fetchstate);
-static inline void vi_fetch_filter32(CCVG res, uint32_t fboffset, uint32_t cur_x, uint32_t fsaa, uint32_t dither_filter, uint32_t vres, uint32_t fetchstate);
+static rdp_inline void vi_vl_lerp(CCVG up, CCVG down, uint32_t frac);
+static rdp_inline void rgbaz_correct_clip(int offx, int offy, __m128i rgba, int *z, uint32_t curpixel_cvg, __m128i spans_dstwzdy_v, __m128i spans_cdrgba_drgbady_v);
+static rdp_inline void vi_fetch_filter16(CCVG res, uint32_t fboffset, uint32_t cur_x, uint32_t fsaa, uint32_t dither_filter, uint32_t vres, uint32_t fetchstate);
+static rdp_inline void vi_fetch_filter32(CCVG res, uint32_t fboffset, uint32_t cur_x, uint32_t fsaa, uint32_t dither_filter, uint32_t vres, uint32_t fetchstate);
 cen64_cold static uint32_t vi_integer_sqrt(uint32_t a);
 cen64_cold static void deduce_derivatives(void);
-static inline int32_t irand();
+static rdp_inline int32_t irand();
 
 static int32_t k0_tf = 0, k1_tf = 0, k2_tf = 0, k3_tf = 0;
 static int32_t k4 = 0, k5 = 0;
@@ -766,8 +772,8 @@ uint32_t tvfadeoutstate[625];
 int rdp_pipeline_crashed = 0;
 
 
-static inline void tcmask(int32_t* S, int32_t* T, int32_t num);
-static inline void tcmask(int32_t* S, int32_t* T, int32_t num)
+static rdp_inline void tcmask(int32_t* S, int32_t* T, int32_t num);
+static rdp_inline void tcmask(int32_t* S, int32_t* T, int32_t num)
 {
 	int32_t wrap;
 	
@@ -798,8 +804,8 @@ static inline void tcmask(int32_t* S, int32_t* T, int32_t num)
 }
 
 
-static inline void tcmask_coupled(int32_t* S, int32_t* S1, int32_t* T, int32_t* T1, int32_t num);
-static inline void tcmask_coupled(int32_t* S, int32_t* S1, int32_t* T, int32_t* T1, int32_t num)
+static rdp_inline void tcmask_coupled(int32_t* S, int32_t* S1, int32_t* T, int32_t* T1, int32_t num);
+static rdp_inline void tcmask_coupled(int32_t* S, int32_t* S1, int32_t* T, int32_t* T1, int32_t num)
 {
 	int32_t wrap;
 	int32_t maskbits; 
@@ -843,8 +849,8 @@ static inline void tcmask_coupled(int32_t* S, int32_t* S1, int32_t* T, int32_t* 
 }
 
 
-static inline void tcmask_copy(int32_t* S, int32_t* S1, int32_t* S2, int32_t* S3, int32_t* T, int32_t num);
-static inline void tcmask_copy(int32_t* S, int32_t* S1, int32_t* S2, int32_t* S3, int32_t* T, int32_t num)
+static rdp_inline void tcmask_copy(int32_t* S, int32_t* S1, int32_t* S2, int32_t* S3, int32_t* T, int32_t num);
+static rdp_inline void tcmask_copy(int32_t* S, int32_t* S1, int32_t* S2, int32_t* S3, int32_t* T, int32_t num)
 {
 	int32_t wrap;
 	int32_t maskbits_s; 
@@ -890,7 +896,7 @@ static inline void tcmask_copy(int32_t* S, int32_t* S1, int32_t* S2, int32_t* S3
 }
 
 
-static inline void tcshift_cycle(int32_t* S, int32_t* T, int32_t* maxs, int32_t* maxt, uint32_t num)
+static rdp_inline void tcshift_cycle(int32_t* S, int32_t* T, int32_t* maxs, int32_t* maxt, uint32_t num)
 {
 
 
@@ -935,7 +941,7 @@ static inline void tcshift_cycle(int32_t* S, int32_t* T, int32_t* maxs, int32_t*
 }	
 
 
-static inline void tcshift_copy(int32_t* S, int32_t* T, uint32_t num)
+static rdp_inline void tcshift_copy(int32_t* S, int32_t* T, uint32_t num)
 {
 	int32_t coord = *S;
 	int32_t shifter = tile[num].shift_s;
@@ -970,7 +976,7 @@ static inline void tcshift_copy(int32_t* S, int32_t* T, uint32_t num)
 }
 
 
-static inline void tcclamp_cycle(int32_t* S, int32_t* T, int32_t* SFRAC, int32_t* TFRAC, int32_t maxs, int32_t maxt, int32_t num)
+static rdp_inline void tcclamp_cycle(int32_t* S, int32_t* T, int32_t* SFRAC, int32_t* TFRAC, int32_t maxs, int32_t maxt, int32_t num)
 {
 
 	int32_t locs = *S, loct = *T;
@@ -1018,7 +1024,7 @@ static inline void tcclamp_cycle(int32_t* S, int32_t* T, int32_t* SFRAC, int32_t
 }
 
 
-static inline void tcclamp_cycle_light(int32_t* S, int32_t* T, int32_t maxs, int32_t maxt, int32_t num)
+static rdp_inline void tcclamp_cycle_light(int32_t* S, int32_t* T, int32_t maxs, int32_t maxt, int32_t num)
 {
 	int32_t locs = *S, loct = *T;
 	if (tile[num].f.clampens)
@@ -1116,7 +1122,7 @@ cen64_cold int angrylion_rdp_init(struct cen64_device *device)
 	return 0;
 }
 
-static inline void vi_fetch_filter16(CCVG res, uint32_t fboffset, uint32_t cur_x, uint32_t fsaa, uint32_t dither_filter, uint32_t vres, uint32_t fetchstate)
+static rdp_inline void vi_fetch_filter16(CCVG res, uint32_t fboffset, uint32_t cur_x, uint32_t fsaa, uint32_t dither_filter, uint32_t vres, uint32_t fetchstate)
 {
 	int r, g, b;
 	uint32_t idx = (fboffset >> 1) + cur_x;
@@ -1155,7 +1161,7 @@ static inline void vi_fetch_filter16(CCVG res, uint32_t fboffset, uint32_t cur_x
 	res[3] = cur_cvg;
 }
 
-static inline void vi_fetch_filter32(CCVG res, uint32_t fboffset, uint32_t cur_x, uint32_t fsaa, uint32_t dither_filter, uint32_t vres, uint32_t fetchstate)
+static rdp_inline void vi_fetch_filter32(CCVG res, uint32_t fboffset, uint32_t cur_x, uint32_t fsaa, uint32_t dither_filter, uint32_t vres, uint32_t fetchstate)
 {
 	int r, g, b;
 	uint32_t pix, addr = (fboffset >> 2) + cur_x;
@@ -1300,7 +1306,7 @@ static void SET_MUL_ALPHA_INPUT(int32_t **input, int code)
 	}
 }
 
-static inline void combiner_1cycle(int adseed, uint32_t* curpixel_cvg)
+static rdp_inline void combiner_1cycle(int adseed, uint32_t* curpixel_cvg)
 {
 
 	int32_t redkey, greenkey, bluekey, temp;
@@ -1414,7 +1420,7 @@ static inline void combiner_1cycle(int adseed, uint32_t* curpixel_cvg)
 		shade_color[3] = 0xff;
 }
 
-static inline void combiner_2cycle(int adseed, uint32_t* curpixel_cvg, int32_t* acalpha)
+static rdp_inline void combiner_2cycle(int adseed, uint32_t* curpixel_cvg, int32_t* acalpha)
 {
 	int32_t redkey, greenkey, bluekey, temp;
 	COLOR chromabypass;
@@ -1876,7 +1882,7 @@ static const uint8_t magic_matrix[16] =
 	 7,  1,  6, 0
 };
 
-static inline int blender_1cycle(uint32_t* fr, uint32_t* fg, uint32_t* fb, int dith, uint32_t blend_en, uint32_t prewrap, uint32_t curpixel_cvg, uint32_t curpixel_cvbit)
+static rdp_inline int blender_1cycle(uint32_t* fr, uint32_t* fg, uint32_t* fb, int dith, uint32_t blend_en, uint32_t prewrap, uint32_t curpixel_cvg, uint32_t curpixel_cvbit)
 {
 	int r, g, b, dontblend;
 	
@@ -1932,7 +1938,7 @@ static inline int blender_1cycle(uint32_t* fr, uint32_t* fg, uint32_t* fb, int d
 		return 0;
 }
 
-static inline int blender_2cycle(uint32_t* fr, uint32_t* fg, uint32_t* fb, int dith, uint32_t blend_en, uint32_t prewrap, uint32_t curpixel_cvg, uint32_t curpixel_cvbit, int32_t acalpha)
+static rdp_inline int blender_2cycle(uint32_t* fr, uint32_t* fg, uint32_t* fb, int dith, uint32_t blend_en, uint32_t prewrap, uint32_t curpixel_cvg, uint32_t curpixel_cvbit, int32_t acalpha)
 {
 	int r, g, b, dontblend;
 
@@ -3877,7 +3883,7 @@ void fetch_qword_copy(uint32_t* hidword, uint32_t* lowdword, int32_t ssss, int32
 	}
 }
 
-static inline void texture_pipeline_cycle(COLOR TEX, COLOR prev, int32_t SSS, int32_t SST, uint32_t tilenum, uint32_t cycle)
+static rdp_inline void texture_pipeline_cycle(COLOR TEX, COLOR prev, int32_t SSS, int32_t SST, uint32_t tilenum, uint32_t cycle)
 {
 #define TRELATIVE(x, y) 	((x) - ((y) << 3));
 
@@ -4169,7 +4175,7 @@ static inline void texture_pipeline_cycle(COLOR TEX, COLOR prev, int32_t SSS, in
 }
 
 
-static inline void tc_pipeline_copy(int32_t* sss0, int32_t* sss1, int32_t* sss2, int32_t* sss3, int32_t* sst, int tilenum)											
+static rdp_inline void tc_pipeline_copy(int32_t* sss0, int32_t* sss1, int32_t* sss2, int32_t* sss3, int32_t* sst, int tilenum)											
 {
 	int ss0 = *sss0, ss1 = 0, ss2 = 0, ss3 = 0, st = *sst;
 
@@ -4195,7 +4201,7 @@ static inline void tc_pipeline_copy(int32_t* sss0, int32_t* sss1, int32_t* sss2,
 	*sst = st;
 }
 
-static inline void tc_pipeline_load(int32_t* sss, int32_t* sst, int tilenum, int coord_quad)
+static rdp_inline void tc_pipeline_load(int32_t* sss, int32_t* sst, int tilenum, int coord_quad)
 {
 	int sss1 = *sss, sst1 = *sst;
 	sss1 = SIGN16(sss1);
@@ -7007,7 +7013,7 @@ void deduce_derivatives()
 	other_modes.f.dolod = other_modes.tex_lod_en || lodfracused;
 }
 
-static inline int32_t irand()
+static rdp_inline int32_t irand()
 {
 	iseed *= 0x343fd;
 	iseed += 0x269ec3;
@@ -7404,7 +7410,7 @@ void rdp_process_list(void)
 
 }
 
-static inline int alpha_compare(int32_t comb_alpha)
+static rdp_inline int alpha_compare(int32_t comb_alpha)
 {
 	int32_t threshold;
 	if (!other_modes.alpha_compare_en)
@@ -7422,7 +7428,7 @@ static inline int alpha_compare(int32_t comb_alpha)
 	}
 }
 
-static inline int32_t color_combiner_equation(int32_t a, int32_t b, int32_t c, int32_t d)
+static rdp_inline int32_t color_combiner_equation(int32_t a, int32_t b, int32_t c, int32_t d)
 {
 
 
@@ -7437,7 +7443,7 @@ static inline int32_t color_combiner_equation(int32_t a, int32_t b, int32_t c, i
 	return (a & 0x1ffff);
 }
 
-static inline int32_t alpha_combiner_equation(int32_t a, int32_t b, int32_t c, int32_t d)
+static rdp_inline int32_t alpha_combiner_equation(int32_t a, int32_t b, int32_t c, int32_t d)
 {
 	a = special_9bit_exttable[a];
 	b = special_9bit_exttable[b];
@@ -7448,7 +7454,7 @@ static inline int32_t alpha_combiner_equation(int32_t a, int32_t b, int32_t c, i
 }
 
 
-static inline void blender_equation_cycle0(int* r, int* g, int* b)
+static rdp_inline void blender_equation_cycle0(int* r, int* g, int* b)
 {
 	int blend1a, blend2a;
 	int blr, blg, blb, sum;
@@ -7494,7 +7500,7 @@ static inline void blender_equation_cycle0(int* r, int* g, int* b)
 	}	
 }
 
-static inline void blender_equation_cycle0_2(int* r, int* g, int* b)
+static rdp_inline void blender_equation_cycle0_2(int* r, int* g, int* b)
 {
 	int blend1a, blend2a;
 	blend1a = *blender1b_a[0] >> 3;
@@ -7512,7 +7518,7 @@ static inline void blender_equation_cycle0_2(int* r, int* g, int* b)
 	*b = (((*blender1a_b[0]) * blend1a + (*blender2a_b[0]) * blend2a) >> 5) & 0xff;
 }
 
-static inline void blender_equation_cycle1(int* r, int* g, int* b)
+static rdp_inline void blender_equation_cycle1(int* r, int* g, int* b)
 {
 	int blend1a, blend2a;
 	int blr, blg, blb, sum;
@@ -7549,7 +7555,7 @@ static inline void blender_equation_cycle1(int* r, int* g, int* b)
 
 
 
-static inline uint32_t rightcvghex(uint32_t x, uint32_t fmask)
+static rdp_inline uint32_t rightcvghex(uint32_t x, uint32_t fmask)
 {
 	uint32_t covered = ((x & 7) + 1) >> 1;
 	
@@ -7557,14 +7563,14 @@ static inline uint32_t rightcvghex(uint32_t x, uint32_t fmask)
 	return (covered & fmask);
 }
 
-static inline uint32_t leftcvghex(uint32_t x, uint32_t fmask) 
+static rdp_inline uint32_t leftcvghex(uint32_t x, uint32_t fmask) 
 {
 	uint32_t covered = ((x & 7) + 1) >> 1;
 	covered = 0xf >> covered;
 	return (covered & fmask);
 }
 
-static inline void compute_cvg_flip(int32_t scanline)
+static rdp_inline void compute_cvg_flip(int32_t scanline)
 {
 	int32_t purgestart, purgeend;
 	int i, length, fmask, maskshift, fmaskshifted;
@@ -7624,7 +7630,7 @@ static inline void compute_cvg_flip(int32_t scanline)
 	}
 }
 
-static inline void compute_cvg_noflip(int32_t scanline)
+static rdp_inline void compute_cvg_noflip(int32_t scanline)
 {
 	int32_t purgestart, purgeend;
 	int i, length, fmask, maskshift, fmaskshifted;
@@ -7939,7 +7945,7 @@ static void fbread2_32(uint32_t curpixel, uint32_t* curpixel_memcvg)
 	}
 }
 
-static inline uint32_t z_decompress(uint32_t zb)
+static rdp_inline uint32_t z_decompress(uint32_t zb)
 {
 	return z_complete_dec_table[(zb >> 2) & 0x3fff];
 }
@@ -8140,14 +8146,14 @@ static void precalc_cvmask_derivatives(void)
 	}
 }
 
-static inline uint16_t decompress_cvmask_frombyte(uint8_t x)
+static rdp_inline uint16_t decompress_cvmask_frombyte(uint8_t x)
 {
 	uint16_t y = (x & 1) | ((x & 2) << 4) | (x & 4) | ((x & 8) << 4) |
 		((x & 0x10) << 4) | ((x & 0x20) << 8) | ((x & 0x40) << 4) | ((x & 0x80) << 8);
 	return y;
 }
 
-static inline void lookup_cvmask_derivatives(uint32_t mask, uint8_t* offx, uint8_t* offy, uint32_t* curpixel_cvg, uint32_t* curpixel_cvbit)
+static rdp_inline void lookup_cvmask_derivatives(uint32_t mask, uint8_t* offx, uint8_t* offy, uint32_t* curpixel_cvg, uint32_t* curpixel_cvbit)
 {
 	CVtcmaskDERIVATIVE temp = cvarray[mask];
 	*curpixel_cvg = temp.cvg;
@@ -8156,19 +8162,19 @@ static inline void lookup_cvmask_derivatives(uint32_t mask, uint8_t* offx, uint8
 	*offy = temp.yoff;
 }
 
-static inline void z_store(uint32_t zcurpixel, uint32_t z, int dzpixenc)
+static rdp_inline void z_store(uint32_t zcurpixel, uint32_t z, int dzpixenc)
 {
 	uint16_t zval = z_com_table[z & 0x3ffff]|(dzpixenc >> 2);
 	uint8_t hval = dzpixenc & 3;
 	PAIRWRITE16(zcurpixel, zval, hval);
 }
 
-static inline uint32_t dz_decompress(uint32_t dz_compressed)
+static rdp_inline uint32_t dz_decompress(uint32_t dz_compressed)
 {
 	return (1 << dz_compressed);
 }
 
-static inline uint32_t dz_compress(uint32_t value)
+static rdp_inline uint32_t dz_compress(uint32_t value)
 {
 	int j = 0;
 	if (value & 0xff00)
@@ -8182,7 +8188,7 @@ static inline uint32_t dz_compress(uint32_t value)
 	return j;
 }
 
-static inline uint32_t z_compare(uint32_t zcurpixel, uint32_t sz, uint16_t dzpix, int dzpixenc, uint32_t* blend_en, uint32_t* prewrap, uint32_t* curpixel_cvg, uint32_t curpixel_memcvg)
+static rdp_inline uint32_t z_compare(uint32_t zcurpixel, uint32_t sz, uint16_t dzpix, int dzpixenc, uint32_t* blend_en, uint32_t* prewrap, uint32_t* curpixel_cvg, uint32_t curpixel_memcvg)
 {
 
 
@@ -8336,7 +8342,7 @@ static inline uint32_t z_compare(uint32_t zcurpixel, uint32_t sz, uint16_t dzpix
 	}
 }
 
-static inline int finalize_spanalpha(uint32_t blend_en, uint32_t curpixel_cvg, uint32_t curpixel_memcvg)
+static rdp_inline int finalize_spanalpha(uint32_t blend_en, uint32_t curpixel_cvg, uint32_t curpixel_memcvg)
 {
 	int finalcvg;
 
@@ -8374,7 +8380,7 @@ static inline int finalize_spanalpha(uint32_t blend_en, uint32_t curpixel_cvg, u
 	return finalcvg;
 }
 
-static inline int32_t normalize_dzpix(int32_t sum)
+static rdp_inline int32_t normalize_dzpix(int32_t sum)
 {
 	if (sum & 0xc000)
 		return 0x8000;
@@ -8391,7 +8397,7 @@ static inline int32_t normalize_dzpix(int32_t sum)
 	return 0;
 }
 
-static inline int32_t CLIP(int32_t value,int32_t min,int32_t max)
+static rdp_inline int32_t CLIP(int32_t value,int32_t min,int32_t max)
 {
 	if (value < min)
 		return min;
@@ -8402,7 +8408,7 @@ static inline int32_t CLIP(int32_t value,int32_t min,int32_t max)
 }
 
 
-static inline void video_filter16(int* endr, int* endg, int* endb, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t centercvg, uint32_t fetchbugstate)
+static rdp_inline void video_filter16(int* endr, int* endg, int* endb, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t centercvg, uint32_t fetchbugstate)
 {
 
 
@@ -8494,7 +8500,7 @@ static inline void video_filter16(int* endr, int* endg, int* endb, uint32_t fbof
 	
 }
 
-static inline void video_filter32(int* endr, int* endg, int* endb, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t centercvg, uint32_t fetchbugstate)
+static rdp_inline void video_filter32(int* endr, int* endg, int* endb, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t centercvg, uint32_t fetchbugstate)
 {
 
 	uint32_t penumaxr, penumaxg, penumaxb, penuminr, penuming, penuminb;
@@ -8571,7 +8577,7 @@ static inline void video_filter32(int* endr, int* endg, int* endb, uint32_t fbof
 	*endb = colb & 0xff;
 }
 
-static inline void divot_filter(CCVG final, CCVG centercolor, CCVG leftcolor, CCVG rightcolor)
+static rdp_inline void divot_filter(CCVG final, CCVG centercolor, CCVG leftcolor, CCVG rightcolor)
 {
 
 
@@ -8619,7 +8625,7 @@ static inline void divot_filter(CCVG final, CCVG centercolor, CCVG leftcolor, CC
 		final[2] = rightb;
 }
 
-static inline void restore_filter16(int* r, int* g, int* b, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t fetchbugstate)
+static rdp_inline void restore_filter16(int* r, int* g, int* b, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t fetchbugstate)
 {
 
 	uint32_t idx = (fboffset >> 1) + num;
@@ -8706,7 +8712,7 @@ static inline void restore_filter16(int* r, int* g, int* b, uint32_t fboffset, u
 	*b = bend;
 }
 
-static inline void restore_filter32(int* r, int* g, int* b, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t fetchbugstate)
+static rdp_inline void restore_filter32(int* r, int* g, int* b, uint32_t fboffset, uint32_t num, uint32_t hres, uint32_t fetchbugstate)
 {
 	uint32_t idx = (fboffset >> 2) + num;
 
@@ -8789,7 +8795,7 @@ static inline void restore_filter32(int* r, int* g, int* b, uint32_t fboffset, u
 	*b = bend;
 }
 
-static inline void gamma_filters(int* r, int* g, int* b, int gamma_and_dither)
+static rdp_inline void gamma_filters(int* r, int* g, int* b, int gamma_and_dither)
 {
 	int cdith, dith;
 	
@@ -8829,7 +8835,7 @@ static inline void gamma_filters(int* r, int* g, int* b, int gamma_and_dither)
 	}
 }
 
-static inline void adjust_brightness(int* r, int* g, int* b, int brightcoeff)
+static rdp_inline void adjust_brightness(int* r, int* g, int* b, int brightcoeff)
 {
 	brightcoeff &= 7;
 	switch(brightcoeff)
@@ -8867,7 +8873,7 @@ static inline void adjust_brightness(int* r, int* g, int* b, int brightcoeff)
 }
 
 
-static inline void video_max_optimized(uint32_t* pixels, uint32_t* penumin, uint32_t* penumax, int numofels)
+static rdp_inline void video_max_optimized(uint32_t* pixels, uint32_t* penumin, uint32_t* penumax, int numofels)
 {
 
 
@@ -9157,7 +9163,7 @@ static void get_dither_nothing(int x, int y, int* cdith, int* adith)
 {
 }
 
-static inline void vi_vl_lerp(CCVG up, CCVG down, uint32_t frac)
+static rdp_inline void vi_vl_lerp(CCVG up, CCVG down, uint32_t frac)
 {
 	uint32_t r0, g0, b0;
 	if (!frac)
@@ -9173,7 +9179,7 @@ static inline void vi_vl_lerp(CCVG up, CCVG down, uint32_t frac)
 
 }
 
-static inline void rgbaz_correct_clip(int offx, int offy, __m128i rgba, int *z, uint32_t curpixel_cvg, __m128i spans_dstwzdy_v, __m128i spans_cdrgba_drgbady_v) {
+static rdp_inline void rgbaz_correct_clip(int offx, int offy, __m128i rgba, int *z, uint32_t curpixel_cvg, __m128i spans_dstwzdy_v, __m128i spans_cdrgba_drgbady_v) {
   __m128i rgba2;
   int sz = *z;
   int zanded;
@@ -9328,7 +9334,7 @@ static void tcdiv_persp(__m128i stwz, int32_t ssst[2]) {
 	ssst[1] = (tempt & 0x1ffff) | overunder_t;
 }
 
-static inline void tclod_2cycle_current(int32_t ssst[2], int32_t nexts, int32_t nextt, __m128i stwz, int32_t prim_tile, int32_t* t1, int32_t* t2, __m128i spans_dstwzdy_v)
+static rdp_inline void tclod_2cycle_current(int32_t ssst[2], int32_t nexts, int32_t nextt, __m128i stwz, int32_t prim_tile, int32_t* t1, int32_t* t2, __m128i spans_dstwzdy_v)
 {
   __m128i nextystw;
   int nextyst[2];
@@ -9387,7 +9393,7 @@ static inline void tclod_2cycle_current(int32_t ssst[2], int32_t nexts, int32_t 
 	}
 }
 
-static inline void tclod_2cycle_current_simple(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1, int32_t* t2, __m128i spans_dstwzdy_v) {
+static rdp_inline void tclod_2cycle_current_simple(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1, int32_t* t2, __m128i spans_dstwzdy_v) {
   __m128i nextstw, nextystw;
   int nextst[2], nextyst[2];
 	int lodclamp = 0;
@@ -9442,7 +9448,7 @@ static inline void tclod_2cycle_current_simple(int32_t ssst[2], __m128i stwz, __
 	}
 }
 
-static inline void tclod_2cycle_current_notexel1(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1, __m128i spans_dstwzdy_v)
+static rdp_inline void tclod_2cycle_current_notexel1(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1, __m128i spans_dstwzdy_v)
 {
   __m128i nextystw, nextstw;
   int nextyst[2], nextst[2];
@@ -9483,7 +9489,7 @@ static inline void tclod_2cycle_current_notexel1(int32_t ssst[2], __m128i stwz, 
 	}
 }
 
-static inline void tclod_2cycle_next(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1, int32_t* t2, int32_t* prelodfrac, __m128i spans_dstwzdy_v)
+static rdp_inline void tclod_2cycle_next(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1, int32_t* t2, int32_t* prelodfrac, __m128i spans_dstwzdy_v)
 {
   __m128i nextstw, nextystw;
   int nextst[2], nextyst[2];
@@ -9564,7 +9570,7 @@ static inline void tclod_2cycle_next(int32_t ssst[2], __m128i stwz, __m128i dstw
 	}
 }
 
-static inline void tclod_1cycle_current(int32_t ssst[2], int32_t nexts, int32_t nextt, __m128i stwz, __m128i dstwzinc, int32_t scanline, int32_t prim_tile, int32_t* t1, SPANSIGS* sigs)
+static rdp_inline void tclod_1cycle_current(int32_t ssst[2], int32_t nexts, int32_t nextt, __m128i stwz, __m128i dstwzinc, int32_t scanline, int32_t prim_tile, int32_t* t1, SPANSIGS* sigs)
 {
   __m128i farstw;
   int farst[2];
@@ -9629,7 +9635,7 @@ static inline void tclod_1cycle_current(int32_t ssst[2], int32_t nexts, int32_t 
 
 
 
-static inline void tclod_1cycle_current_simple(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t scanline, int32_t prim_tile, int32_t* t1, SPANSIGS* sigs)
+static rdp_inline void tclod_1cycle_current_simple(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t scanline, int32_t prim_tile, int32_t* t1, SPANSIGS* sigs)
 {
   __m128i farstw, nextstw;
   int farst[2], nextst[2];
@@ -9694,7 +9700,7 @@ static inline void tclod_1cycle_current_simple(int32_t ssst[2], __m128i stwz, __
 	}
 }
 
-static inline void tclod_1cycle_next(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t scanline, int32_t prim_tile, int32_t* t1, SPANSIGS* sigs, int32_t* prelodfrac)
+static rdp_inline void tclod_1cycle_next(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t scanline, int32_t prim_tile, int32_t* t1, SPANSIGS* sigs, int32_t* prelodfrac)
 {
   __m128i nextstw, farstw;
   int nextst[2], farst[2];
@@ -9799,7 +9805,7 @@ static inline void tclod_1cycle_next(int32_t ssst[2], __m128i stwz, __m128i dstw
 	}
 }
 
-static inline void tclod_copy(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1)
+static rdp_inline void tclod_copy(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, int32_t prim_tile, int32_t* t1)
 {
   __m128i nextstw, farstw;
   int nextst[2], farst[2];
@@ -9840,7 +9846,7 @@ static inline void tclod_copy(int32_t ssst[2], __m128i stwz, __m128i dstwzinc, i
 	}
 }
 
-static inline void get_texel1_1cycle(int32_t st[2], __m128i stwz, __m128i dstwzinc, int32_t scanline, SPANSIGS* sigs)
+static rdp_inline void get_texel1_1cycle(int32_t st[2], __m128i stwz, __m128i dstwzinc, int32_t scanline, SPANSIGS* sigs)
 {
   __m128i nextstw;
 	
@@ -9858,7 +9864,7 @@ static inline void get_texel1_1cycle(int32_t st[2], __m128i stwz, __m128i dstwzi
   tcdiv_ptr(nextstw, st);
 }
 
-static inline void get_nexttexel0_2cycle(int32_t st[2], __m128i stwz, __m128i dstwzinc)
+static rdp_inline void get_nexttexel0_2cycle(int32_t st[2], __m128i stwz, __m128i dstwzinc)
 {
   __m128i nextstw = _mm_srai_epi32(_mm_add_epi32(stwz, dstwzinc), 16);
   tcdiv_ptr(nextstw, st);
@@ -9866,7 +9872,7 @@ static inline void get_nexttexel0_2cycle(int32_t st[2], __m128i stwz, __m128i ds
 
 
 
-static inline void tclod_4x17_to_15(int32_t scurr, int32_t snext, int32_t tcurr, int32_t tnext, int32_t previous, int32_t* lod)
+static rdp_inline void tclod_4x17_to_15(int32_t scurr, int32_t snext, int32_t tcurr, int32_t tnext, int32_t previous, int32_t* lod)
 {
 
 
@@ -9886,7 +9892,7 @@ static inline void tclod_4x17_to_15(int32_t scurr, int32_t snext, int32_t tcurr,
 		*lod |= 0x4000;
 }
 
-static inline void tclod_tcclamp(int32_t* sss, int32_t* sst)
+static rdp_inline void tclod_tcclamp(int32_t* sss, int32_t* sst)
 {
 	int32_t tempanded, temps = *sss, tempt = *sst;
 
@@ -9939,7 +9945,7 @@ static inline void tclod_tcclamp(int32_t* sss, int32_t* sst)
 }
 
 
-static inline void lodfrac_lodtile_signals(int lodclamp, int32_t lod, uint32_t* l_tile, uint32_t* magnify, uint32_t* distant)
+static rdp_inline void lodfrac_lodtile_signals(int lodclamp, int32_t lod, uint32_t* l_tile, uint32_t* magnify, uint32_t* distant)
 {
 	uint32_t ltil, dis, mag;
 	int32_t lf;
