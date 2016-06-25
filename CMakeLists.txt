@@ -11,7 +11,15 @@ project(cen64 C)
 
 if(APPLE)
   set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" ${CMAKE_MODULE_PATH})
-  find_package(OpenGLXQuartz REQUIRED)
+  find_package(SDL2 REQUIRED)
+  find_package(OpenGL REQUIRED)
+  include_directories(${PROJECT_SOURCE_DIR}/os/apple)
+  find_library(APPKIT_LIBRARY AppKit)
+  mark_as_advanced(APPKIT_LIBRARY)
+  set(EXTRA_OS_LIBS ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${APPKIT_LIBRARY})
+
+  # Needed because SDL2 cmake module is broken at the moment
+  cmake_policy(SET CMP0004 OLD)
   # Needed for signal.h on OS X.
   add_definitions(-D_DARWIN_C_SOURCE)
 else(APPLE)
@@ -298,6 +306,11 @@ set(OS_X11_SOURCES
   ${PROJECT_SOURCE_DIR}/os/x11/gl_window.c
 )
 
+set(OS_APPLE_SOURCES
+  ${PROJECT_SOURCE_DIR}/os/apple/gl_config.c
+  ${PROJECT_SOURCE_DIR}/os/apple/gl_window.c
+)
+
 set(PI_SOURCES
   ${PROJECT_SOURCE_DIR}/pi/controller.c
 )
@@ -366,6 +379,14 @@ if (DEFINED WIN32)
     ${OS_COMMON_SOURCES}
     ${OS_WINAPI_SOURCES}
   )
+elseif (DEFINED APPLE)
+  include_directories(${PROJECT_SOURCE_DIR}/os/posix)
+
+  list(APPEND OS_SOURCES
+    ${OS_COMMON_SOURCES}
+    ${OS_POSIX_SOURCES}
+    ${OS_APPLE_SOURCES}
+  )
 else ()
   include_directories(${PROJECT_SOURCE_DIR}/os/posix)
   include_directories(${PROJECT_SOURCE_DIR}/os/x11)
@@ -382,7 +403,9 @@ endif (DEFINED WIN32)
 # Glob all the files together.
 #
 if (DEFINED UNIX)
-  find_package(X11 REQUIRED)
+  if (NOT DEFINED APPLE)
+    find_package(X11 REQUIRED)
+  endif (NOT DEFINED APPLE)
 
   if (${CMAKE_C_COMPILER_ID} MATCHES GNU OR ${CMAKE_C_COMPILER_ID} MATCHES Clang OR ${CMAKE_C_COMPILER_ID} MATCHES Intel)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_POSIX_C_SOURCE=200112L -D_BSD_SOURCE")

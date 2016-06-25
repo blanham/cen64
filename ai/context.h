@@ -11,8 +11,13 @@
 #ifndef CEN64_AI_CONTEXT_H
 #define CEN64_AI_CONTEXT_H
 #include "common.h"
+#ifdef __APPLE__
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
+#else
 #include <AL/al.h>
 #include <AL/alc.h>
+#endif
 
 struct cen64_ai_context {
   ALuint buffers[2];

@@ -13,9 +13,13 @@
 #ifdef _WIN32
 #include <windows.h>
 #define GL_UNSIGNED_SHORT_5_5_5_1 0x8034
+#include <GL/gl.h>
+#elif __APPLE__
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
 #endif
 
-#include <GL/gl.h>
 
 #define MAX_FRAME_DATA_SIZE (640 * 480 * 4)
 

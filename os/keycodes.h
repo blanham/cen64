@@ -12,7 +12,8 @@
 
 #ifdef _WIN32
 #include "os/windows/keycodes.h"
-
+#elif __APPLE__
+#include "os/apple/keycodes.h"
 #else
 #include "os/x11/keycodes.h"
 #endif
